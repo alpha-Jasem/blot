@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="نشرة">
+<meta name="theme-color" content="#08090f">
+<title>نشرة</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ════════════════════════════════
+   TOKENS
+════════════════════════════════ */
+:root{
+  --bg1:#08090f; --bg2:#0e1018;
+  --accent:#63B3FF;
+  --accent-glow:rgba(99,179,255,.45);
+  --gold:#F5C842; --gold-d:#C8960C;
+  --green:#2ECC71; --red:#E74C3C;
+  --white:#ffffff;
+  --g05:rgba(255,255,255,.05);
+  --g08:rgba(255,255,255,.08);
+  --g12:rgba(255,255,255,.12);
+  --g18:rgba(255,255,255,.18);
+  --g30:rgba(255,255,255,.30);
+  --gb:rgba(255,255,255,.10);
+  --t1:#ffffff; --t2:rgba(255,255,255,.55); --t3:rgba(255,255,255,.28);
+  --surf:rgba(14,18,36,.96);
+  --ease:cubic-bezier(.22,1,.36,1);
+  --spring:cubic-bezier(.34,1.56,.64,1);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;}
+body{
+  font-family:'Tajawal',sans-serif;
+  background:var(--bg1);
+  color:var(--t1);
+  position:fixed;inset:0;
+}
+
+/* ── SCREENS ── */
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;
+  opacity:0;pointer-events:none;
+  transition:opacity .38s var(--ease),transform .38s var(--ease);
+  transform:translateY(16px) scale(.99);overflow:hidden;}
+.screen.active{opacity:1;pointer-events:all;transform:none;}
+
+/* ════════════════════════════════
+   SPLASH
+════════════════════════════════ */
+#splash{
+  background:radial-gradient(ellipse at 30% 20%,#0d0f18 0%,#08090f 70%);
+  align-items:center;justify-content:center;z-index:999;
+  flex-direction:column;gap:0;
+}
+/* particles */
+#splash::before{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(1.5px 1.5px at 15% 20%,rgba(255,255,255,.6) 0%,transparent 100%),
+    radial-gradient(1px 1px at 72% 12%,rgba(255,255,255,.5) 0%,transparent 100%),
+    radial-gradient(1.5px 1.5px at 88% 35%,rgba(255,255,255,.4) 0%,transparent 100%),
+    radial-gradient(1px 1px at 40% 8%,rgba(255,255,255,.55) 0%,transparent 100%),
+    radial-gradient(1px 1px at 60% 80%,rgba(255,255,255,.35) 0%,transparent 100%),
+    radial-gradient(1.5px 1.5px at 25% 70%,rgba(255,255,255,.45) 0%,transparent 100%),
+    radial-gradient(1px 1px at 90% 65%,rgba(255,255,255,.4) 0%,transparent 100%),
+    radial-gradient(1px 1px at 8% 55%,rgba(255,255,255,.3) 0%,transparent 100%);
+}
+
+.splash-icon-wrap{
+  width:120px;height:120px;border-radius:32px;
+  background:linear-gradient(145deg,rgba(99,179,255,.14),rgba(99,179,255,.03));
+  border:1px solid rgba(99,179,255,.2);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 80px rgba(99,179,255,.1),inset 0 1px 0 rgba(255,255,255,.06);
+  animation:iconPop .8s var(--spring) .3s both;
+  position:relative;overflow:hidden;
+}
+.splash-icon-wrap::after{
+  content:'';position:absolute;
+  top:-40px;left:-40px;width:80px;height:80px;
+  background:radial-gradient(circle,rgba(79,142,247,.25),transparent 70%);
+}
+@keyframes iconPop{from{opacity:0;transform:scale(.5) translateY(20px)}to{opacity:1;transform:none}}
+
+.splash-name{
+  font-size:42px;font-weight:900;color:#fff;letter-spacing:-2px;
+  margin-top:20px;
+  animation:fadeUp .7s var(--ease) .55s both;
+  text-shadow:0 0 60px rgba(99,179,255,.2);
+}
+.splash-tag{
+  font-size:13px;font-weight:400;color:var(--t3);
+  margin-top:6px;letter-spacing:2px;
+  animation:fadeUp .6s var(--ease) .7s both;
+}
+.splash-dots{display:flex;gap:6px;margin-top:28px;animation:fadeUp .5s var(--ease) .9s both;}
+.dot{width:5px;height:5px;border-radius:50%;background:var(--g18);animation:dotPulse 1.4s ease-in-out infinite;}
+.dot:nth-child(2){animation-delay:.2s}.dot:nth-child(3){animation-delay:.4s}
+@keyframes dotPulse{0%,80%,100%{transform:scale(.5);opacity:.3}40%{transform:scale(1);opacity:1}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+/* ════════════════════════════════
+   GAME SCREEN
+════════════════════════════════ */
+#game{background:var(--bg1);}
+
+/* Ambient background orbs */
+.game-orb{position:absolute;border-radius:50%;pointer-events:none;filter:blur(60px);}
+.orb1{width:300px;height:300px;background:rgba(99,179,255,.04);top:-100px;right:-80px;}
+.orb2{width:250px;height:250px;background:rgba(99,179,255,.025);bottom:200px;left:-80px;}
+
+/* ── TOP BAR ── */
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:52px 20px 14px;
+  position:relative;z-index:10;flex-shrink:0;
+}
+.topbar-title{
+  position:absolute;left:50%;transform:translateX(-50%);
+  font-size:22px;font-weight:900;color:var(--t1);
+  letter-spacing:-1px;
+  text-shadow:0 0 30px rgba(79,142,247,.2);
+}
+.topbar-actions{display:flex;gap:8px;}
+.icon-btn{
+  width:38px;height:38px;border:none;border-radius:12px;
+  background:var(--g08);border:1px solid var(--gb);
+  color:var(--t2);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  backdrop-filter:blur(20px);
+  transition:all .15s;
+}
+.icon-btn:active{background:var(--g18);transform:scale(.88);color:var(--t1);}
+.icon-btn svg{width:17px;height:17px;}
+
+/* ── SCORE PANELS ── */
+.score-zone{
+  display:flex;padding:0 16px 14px;gap:10px;flex-shrink:0;
+  position:relative;z-index:5;
+}
+.score-panel{
+  flex:1;border-radius:20px;overflow:hidden;position:relative;
+  background:linear-gradient(160deg,rgba(255,255,255,.045),rgba(255,255,255,.015));
+  border:1px solid rgba(255,255,255,.07);
+  backdrop-filter:blur(30px);
+  padding:18px 14px 16px;
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  box-shadow:0 1px 0 rgba(255,255,255,.06) inset,0 20px 40px rgba(0,0,0,.3);
+}
+.score-panel::before{
+  content:'';position:absolute;
+  top:-1px;left:10%;right:10%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.18),transparent);
+}
+.score-panel-name{
+  font-size:13px;font-weight:700;color:var(--t3);
+  letter-spacing:1.5px;text-transform:uppercase;
+}
+.score-circle{
+  width:100px;height:100px;border-radius:50%;position:relative;
+  display:flex;align-items:center;justify-content:center;
+}
+.score-circle-bg{
+  position:absolute;inset:0;border-radius:50%;
+  background:conic-gradient(from 0deg,rgba(99,179,255,.1) 0%,rgba(99,179,255,.03) 100%);
+  border:1.5px solid rgba(99,179,255,.16);
+  box-shadow:inset 0 0 20px rgba(0,0,0,.3);
+}
+.score-circle::after{
+  content:'';position:absolute;inset:6px;border-radius:50%;
+  border:1px solid rgba(79,142,247,.1);
+}
+.score-number{
+  font-size:44px;font-weight:900;color:var(--t1);line-height:1;
+  position:relative;z-index:1;
+  transition:transform .2s var(--spring);
+}
+.score-number.pop{animation:numPop .35s var(--spring);}
+@keyframes numPop{0%{transform:scale(1)}40%{transform:scale(1.3)}100%{transform:scale(1)}}
+.score-number.danger{color:var(--gold);text-shadow:0 0 24px rgba(245,200,66,.4);}
+
+/* ── MID SECTION ── */
+.mid-section{
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  background:linear-gradient(180deg,rgba(4,5,10,.0) 0%,rgba(4,5,10,.6) 8%);
+  border-radius:28px 28px 0 0;
+  border-top:1px solid rgba(255,255,255,.055);
+  padding:16px 16px 0;
+  position:relative;z-index:5;
+  overflow:hidden;
+}
+.mid-section::before{
+  content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:40px;height:4px;border-radius:2px;
+  background:var(--g12);margin-top:10px;
+}
+
+/* Dealer row */
+.dealer-row{display:flex;flex-direction:column;align-items:center;gap:2px;margin-bottom:12px;}
+.dealer-label{font-size:10px;font-weight:700;color:var(--t3);letter-spacing:2px;text-transform:uppercase;}
+.dealer-name{font-size:15px;font-weight:800;color:var(--t2);}
+
+/* Arrow button */
+.arrow-btn{
+  width:58px;height:58px;border:none;border-radius:18px;
+  background:linear-gradient(145deg,var(--g12),var(--g05));
+  border:1px solid var(--gb);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  margin-bottom:14px;
+  box-shadow:0 4px 20px rgba(0,0,0,.25),inset 0 1px 0 var(--g12);
+  transition:all .15s;position:relative;
+}
+.arrow-btn::before{
+  content:'';position:absolute;inset:0;border-radius:inherit;
+  background:linear-gradient(145deg,rgba(79,142,247,.08),transparent);
+}
+.arrow-btn:active{transform:scale(.88);box-shadow:none;}
+.arrow-glyph{
+  font-size:24px;color:var(--t1);position:relative;z-index:1;
+  transition:transform .38s var(--spring);
+}
+
+/* Timer */
+.timer-wrap{
+  display:flex;align-items:center;gap:8px;
+  background:var(--g05);border:1px solid var(--gb);
+  border-radius:999px;padding:6px 16px;
+  margin-bottom:16px;
+}
+.timer-text{font-size:19px;font-weight:900;color:var(--t1);font-variant-numeric:tabular-nums;letter-spacing:1.5px;}
+
+/* Register CTA */
+.cta-wrap{width:100%;max-width:260px;margin-bottom:18px;position:relative;}
+.cta-btn{
+  width:100%;background:none;border:none;
+  border-radius:999px;padding:0;cursor:pointer;
+  position:relative;overflow:hidden;
+  transition:transform .15s var(--spring);
+}
+.cta-btn:active{transform:scale(.95);}
+.cta-inner{
+  background:linear-gradient(135deg,rgba(99,179,255,.2) 0%,rgba(99,179,255,.1) 100%);
+  border:1px solid rgba(99,179,255,.38);
+  border-radius:999px;padding:17px 32px;
+  font-family:'Tajawal',sans-serif;font-size:20px;font-weight:900;color:var(--t1);
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  backdrop-filter:blur(20px);
+  box-shadow:0 0 30px rgba(99,179,255,.1),inset 0 1px 0 rgba(255,255,255,.08);
+  position:relative;
+}
+.cta-inner::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:50%;
+  background:linear-gradient(180deg,rgba(255,255,255,.06),transparent);
+  border-radius:999px 999px 0 0;
+}
+.cta-icon{width:20px;height:20px;opacity:.7;}
+
+/* History */
+.history-scroll{width:100%;flex:1;overflow-y:auto;padding-bottom:8px;-webkit-overflow-scrolling:touch;}
+.history-header{display:flex;padding:0 6px 8px;border-bottom:1px solid var(--g05);margin-bottom:8px;}
+.history-col{flex:1;text-align:center;font-size:10px;font-weight:800;color:var(--t3);letter-spacing:.8px;text-transform:uppercase;}
+.history-list{display:flex;flex-direction:column;gap:5px;padding:0 2px;}
+.history-row{
+  display:flex;align-items:center;position:relative;
+  background:linear-gradient(90deg,var(--g05),rgba(255,255,255,.03));
+  border:1px solid var(--g05);border-radius:12px;
+  padding:9px 14px;
+  animation:rowSlide .25s var(--ease);
+}
+@keyframes rowSlide{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}
+.history-val{flex:1;text-align:center;font-size:17px;font-weight:800;color:var(--t2);}
+.history-val.win{color:var(--green);text-shadow:0 0 12px rgba(46,204,113,.3);}
+.history-val.z{color:var(--t3);font-size:13px;}
+.history-sep{width:1px;height:18px;background:var(--g08);}
+.history-round{
+  position:absolute;top:-7px;left:50%;transform:translateX(-50%);
+  background:rgba(6,8,16,.9);border:1px solid var(--g08);
+  border-radius:999px;font-size:9px;font-weight:700;color:var(--t3);
+  padding:2px 9px;white-space:nowrap;letter-spacing:.5px;
+}
+
+/* ── BOTTOM ACTIONS ── */
+.bottom-actions{
+  display:flex;gap:8px;padding:10px 16px 10px;
+  background:rgba(6,8,16,.6);
+  border-top:1px solid var(--g05);
+  backdrop-filter:blur(30px);
+  flex-shrink:0;
+}
+.action-btn{
+  flex:1;border:none;border-radius:999px;padding:12px;
+  font-family:'Tajawal',sans-serif;font-size:14px;font-weight:800;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;
+  transition:all .15s var(--spring);
+  position:relative;overflow:hidden;
+}
+.action-btn:active{transform:scale(.95);}
+.action-btn::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:50%;
+  background:linear-gradient(180deg,rgba(255,255,255,.06),transparent);
+}
+.btn-undo{
+  background:linear-gradient(135deg,rgba(231,76,60,.25),rgba(192,57,43,.15));
+  border:1px solid rgba(231,76,60,.35);color:#E74C3C;
+}
+.btn-new{
+  background:linear-gradient(135deg,rgba(46,204,113,.25),rgba(30,140,70,.15));
+  border:1px solid rgba(46,204,113,.35);color:#2ECC71;
+}
+
+/* ── BOTTOM NAV ── */
+.bottom-nav{
+  display:flex;align-items:center;
+  margin:0 16px 32px;
+  background:rgba(4,5,12,.8);
+  border:1px solid rgba(255,255,255,.07);border-radius:22px;
+  padding:8px 6px;
+  backdrop-filter:blur(50px) saturate(180%);
+  -webkit-backdrop-filter:blur(50px) saturate(180%);
+  box-shadow:0 8px 32px rgba(0,0,0,.5),inset 0 1px 0 var(--g08);
+  flex-shrink:0;position:relative;overflow:hidden;
+}
+.bottom-nav::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,var(--g05),transparent);pointer-events:none;
+}
+.nav-tab{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;
+  background:none;border:none;cursor:pointer;
+  padding:7px 4px;border-radius:16px;
+  transition:all .2s;position:relative;z-index:1;
+  -webkit-user-select:none;user-select:none;
+}
+.nav-tab:active{background:var(--g08);}
+.nav-tab svg{
+  width:22px;height:22px;
+  transition:transform .28s var(--spring),opacity .2s,filter .2s;
+}
+.nav-tab .nav-label{
+  font-size:10px;font-weight:800;color:var(--t3);
+  letter-spacing:.4px;transition:color .2s;
+}
+.nav-tab.active .nav-label{color:var(--accent);}
+.nav-tab.active svg{
+  opacity:1;transform:scale(1.12);
+  filter:drop-shadow(0 0 8px var(--accent-glow));
+}
+.nav-tab:not(.active) svg{opacity:.7;}
+.nav-tab.active::before{
+  content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:32px;height:3px;border-radius:0 0 3px 3px;
+  background:var(--accent);
+  box-shadow:0 0 18px 3px var(--accent-glow);
+}
+
+/* ════════════════════════════════
+   SHEETS & OVERLAYS
+════════════════════════════════ */
+.overlay{
+  display:none;position:fixed;inset:0;z-index:200;
+  background:rgba(0,0,0,.6);backdrop-filter:blur(10px);
+  align-items:flex-end;justify-content:center;
+}
+.overlay.show{display:flex;}
+
+.bottom-sheet{
+  background:var(--surf);
+  border:1px solid var(--gb);
+  border-radius:28px 28px 0 0;width:100%;
+  padding:12px 20px 48px;
+  backdrop-filter:blur(50px);
+  box-shadow:0 -12px 60px rgba(0,0,0,.5),inset 0 1px 0 var(--g12);
+  animation:sheetUp .32s var(--ease);
+}
+@keyframes sheetUp{from{transform:translateY(100%);opacity:.8}to{transform:none;opacity:1}}
+.sheet-handle{width:36px;height:4px;border-radius:2px;background:var(--g18);margin:0 auto 16px;}
+.sheet-title{font-size:17px;font-weight:800;color:var(--t1);text-align:center;margin-bottom:20px;letter-spacing:-.3px;}
+
+/* Score inputs */
+.score-inputs{display:flex;gap:12px;align-items:center;margin-bottom:14px;}
+.score-input-group{flex:1;display:flex;flex-direction:column;gap:7px;align-items:center;}
+.score-input-label{font-size:11px;font-weight:800;color:var(--t3);letter-spacing:1px;text-transform:uppercase;}
+.score-input{
+  width:100%;text-align:center;
+  font-family:'Tajawal',sans-serif;font-size:42px;font-weight:900;color:var(--t1);
+  background:var(--g08);border:1.5px solid var(--gb);
+  border-radius:18px;padding:14px 8px;outline:none;
+  -webkit-appearance:none;appearance:none;
+  transition:border-color .2s,background .2s,transform .2s var(--spring);
+}
+.score-input:focus{
+  border-color:rgba(79,142,247,.6);
+  background:rgba(79,142,247,.08);
+  transform:scale(1.02);
+}
+.score-input::-webkit-outer-spin-button,
+.score-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+.score-dash{font-size:20px;color:var(--t3);padding-top:24px;}
+
+.sheet-hint{
+  background:var(--g05);border:1px solid var(--gb);
+  border-radius:12px;padding:8px 14px;
+  font-size:13px;color:var(--accent);font-weight:700;
+  text-align:center;margin-bottom:14px;min-height:30px;
+  letter-spacing:.2px;
+}
+.sheet-hint.err{color:var(--red);background:rgba(231,76,60,.07);border-color:rgba(231,76,60,.2);}
+
+.sheet-submit{
+  width:100%;border:none;border-radius:16px;padding:16px;
+  font-family:'Tajawal',sans-serif;font-size:18px;font-weight:900;
+  cursor:pointer;letter-spacing:-.3px;
+  background:linear-gradient(135deg,rgba(79,142,247,.35),rgba(45,92,232,.25));
+  border:1px solid rgba(79,142,247,.5);color:white;
+  box-shadow:0 4px 24px rgba(79,142,247,.25),inset 0 1px 0 rgba(255,255,255,.1);
+  transition:transform .15s var(--spring),opacity .15s;
+  position:relative;overflow:hidden;
+}
+.sheet-submit::before{content:'';position:absolute;top:0;left:0;right:0;height:50%;background:linear-gradient(180deg,rgba(255,255,255,.08),transparent);}
+.sheet-submit:active{transform:scale(.97);opacity:.9;}
+
+/* Win sheet */
+.win-overlay{
+  display:none;position:fixed;inset:0;z-index:250;
+  background:rgba(0,0,0,.7);backdrop-filter:blur(16px);
+  align-items:flex-end;justify-content:center;
+}
+.win-overlay.show{display:flex;}
+.win-sheet{
+  background:var(--surf);border:1px solid var(--gb);
+  border-radius:28px 28px 0 0;width:100%;
+  padding:12px 24px 52px;
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  box-shadow:0 -12px 60px rgba(0,0,0,.6),inset 0 1px 0 var(--g12);
+  animation:sheetUp .42s var(--spring);
+}
+.win-trophy{
+  width:72px;height:72px;border-radius:22px;
+  background:linear-gradient(135deg,rgba(245,200,66,.2),rgba(200,150,12,.1));
+  border:1px solid rgba(245,200,66,.3);
+  display:flex;align-items:center;justify-content:center;
+  margin-top:8px;
+  box-shadow:0 0 40px rgba(245,200,66,.12);
+  animation:trophyBounce .6s var(--spring) .1s both;
+}
+@keyframes trophyBounce{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+.win-label{font-size:12px;color:var(--t3);font-weight:700;letter-spacing:1px;text-transform:uppercase;}
+.win-name{font-size:32px;font-weight:900;color:var(--t1);letter-spacing:-1px;}
+.win-score{font-size:13px;color:var(--t3);margin-bottom:8px;}
+.win-btns{display:flex;gap:10px;width:100%;margin-top:4px;}
+.win-btn{
+  flex:1;border:none;border-radius:999px;padding:14px;
+  font-family:'Tajawal',sans-serif;font-size:15px;font-weight:800;
+  cursor:pointer;transition:transform .15s var(--spring);
+}
+.win-btn:active{transform:scale(.96);}
+.win-btn-new{
+  background:linear-gradient(135deg,rgba(79,142,247,.35),rgba(45,92,232,.25));
+  border:1px solid rgba(79,142,247,.5);color:white;
+}
+.win-btn-undo{background:var(--g08);color:var(--t2);border:1px solid var(--gb);}
+
+/* Confirm modal */
+.modal-overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.7);backdrop-filter:blur(14px);
+  z-index:300;align-items:center;justify-content:center;padding:32px;
+}
+.modal-overlay.show{display:flex;}
+.modal-card{
+  background:var(--surf);border:1px solid var(--gb);
+  border-radius:24px;padding:28px 22px;text-align:center;
+  width:100%;max-width:300px;
+  box-shadow:0 24px 80px rgba(0,0,0,.6);
+  animation:modalPop .3s var(--spring);
+}
+@keyframes modalPop{from{transform:scale(.82);opacity:0}to{transform:none;opacity:1}}
+.modal-icon{width:52px;height:52px;border-radius:16px;background:var(--g08);border:1px solid var(--gb);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;}
+.modal-title{font-size:19px;font-weight:900;color:var(--t1);margin-bottom:5px;letter-spacing:-.3px;}
+.modal-sub{font-size:13px;color:var(--t2);margin-bottom:22px;line-height:1.6;}
+.modal-btns{display:flex;gap:8px;}
+.modal-btn{
+  flex:1;border:none;border-radius:12px;padding:13px;
+  font-family:'Tajawal',sans-serif;font-size:14px;font-weight:800;
+  cursor:pointer;transition:transform .12s;
+}
+.modal-btn:active{transform:scale(.96);}
+.modal-cancel{background:var(--g08);color:var(--t2);border:1px solid var(--gb);}
+.modal-ok{background:rgba(231,76,60,.22);color:#FF6B5B;border:1px solid rgba(231,76,60,.3);}
+
+/* ════════════════════════════════
+   EDIT NAMES
+════════════════════════════════ */
+#editNames{background:var(--bg1);}
+.edit-scroll{flex:1;overflow-y:auto;padding:16px;}
+.edit-group{margin-bottom:24px;}
+.edit-group-label{font-size:10px;font-weight:800;color:var(--t3);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;padding-right:2px;}
+.edit-field{
+  width:100%;font-family:'Tajawal',sans-serif;
+  font-size:16px;font-weight:700;color:var(--t1);
+  background:var(--g08);border:1.5px solid var(--gb);
+  border-radius:14px;padding:14px 16px;
+  outline:none;margin-bottom:8px;text-align:right;
+  transition:border-color .2s,background .2s;
+}
+.edit-field:focus{border-color:rgba(79,142,247,.5);background:rgba(79,142,247,.07);}
+.edit-field::placeholder{color:var(--t3);font-weight:400;}
+.edit-footer{padding:12px 16px 40px;display:flex;gap:10px;border-top:1px solid var(--g05);background:rgba(6,8,16,.5);}
+.edit-btn{
+  flex:1;border:none;border-radius:16px;padding:15px;
+  font-family:'Tajawal',sans-serif;font-size:15px;font-weight:800;
+  cursor:pointer;transition:transform .12s;
+}
+.edit-btn:active{transform:scale(.97);}
+.edit-skip{background:var(--g08);color:var(--t2);border:1px solid var(--gb);}
+.edit-done{
+  background:linear-gradient(135deg,rgba(79,142,247,.35),rgba(45,92,232,.25));
+  border:1px solid rgba(79,142,247,.5);color:white;
+}
+
+/* ════════════════════════════════
+   THEME PICKER
+════════════════════════════════ */
+#themePicker{background:var(--bg1);}
+.theme-body{flex:1;overflow-y:auto;padding:14px;}
+.theme-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.theme-featured{grid-column:1/-1;}
+.theme-item{border-radius:20px;overflow:hidden;cursor:pointer;border:2px solid rgba(255,255,255,.06);transition:border-color .2s,transform .15s;}
+.theme-item:active{transform:scale(.98);}
+.theme-item.sel{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent);}
+.theme-preview{position:relative;width:100%;aspect-ratio:3/4;overflow:hidden;}
+.theme-featured .theme-preview{aspect-ratio:16/9;}
+.theme-scores{position:absolute;bottom:0;left:0;right:0;display:flex;gap:8px;padding:10px 14px;background:linear-gradient(to top,rgba(0,0,0,.6),transparent);}
+.ts{flex:1;text-align:center;}
+.ts-n{font-size:9px;font-weight:800;color:var(--ts-color,rgba(99,179,255,.5));letter-spacing:1.5px;text-transform:uppercase;}
+.ts-v{font-size:28px;font-weight:900;color:white;line-height:1.1;}
+.theme-info{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:rgba(255,255,255,.03);border-top:1px solid rgba(255,255,255,.06);}
+.theme-name{font-size:14px;font-weight:800;color:var(--t1);letter-spacing:-.2px;}
+.theme-check-ico{width:24px;height:24px;border-radius:50%;background:var(--accent);display:none;align-items:center;justify-content:center;}
+.theme-item.sel .theme-check-ico{display:flex;}
+.theme-section-label{font-size:10px;font-weight:800;color:var(--t3);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;margin-top:6px;}
+.art-cards-row{display:flex;gap:12px;margin-bottom:20px;}
+.art-card{
+  flex:1;border-radius:18px;overflow:hidden;cursor:pointer;
+  border:2px solid transparent;aspect-ratio:200/280;position:relative;
+  box-shadow:0 8px 32px rgba(0,0,0,.5);
+  transition:transform .15s,border-color .2s;
+}
+.art-card:active{transform:scale(.96);}
+.art-card.sel{border-color:var(--accent);box-shadow:0 8px 40px rgba(79,142,247,.3);}
+.art-svg{width:100%;height:100%;display:block;}
+.art-check{
+  position:absolute;top:10px;left:10px;width:24px;height:24px;
+  border-radius:50%;background:var(--accent);display:none;align-items:center;justify-content:center;
+  box-shadow:0 0 12px var(--accent-glow);
+}
+.art-card.sel .art-check{display:flex;}
+.art-card-name{
+  position:absolute;bottom:0;right:0;left:0;
+  padding:24px 10px 10px;
+  background:linear-gradient(to top,rgba(0,0,0,.75),transparent);
+  text-align:center;font-size:12px;font-weight:800;color:white;
+}
+.color-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;}
+.color-swatch{
+  border-radius:14px;aspect-ratio:1;cursor:pointer;position:relative;overflow:hidden;
+  border:2px solid transparent;transition:transform .14s,border-color .18s;
+  box-shadow:0 4px 16px rgba(0,0,0,.35);
+}
+.color-swatch:active{transform:scale(.94);}
+.color-swatch.sel{border-color:var(--accent);}
+.swatch-bg{position:absolute;inset:0;}
+.swatch-ov{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.45),transparent 50%);}
+.swatch-check{position:absolute;top:4px;left:4px;width:14px;height:14px;border-radius:50%;background:var(--accent);display:none;align-items:center;justify-content:center;}
+.color-swatch.sel .swatch-check{display:flex;}
+.swatch-name{position:absolute;bottom:5px;right:0;left:0;text-align:center;font-size:9px;font-weight:800;color:white;text-shadow:0 1px 4px rgba(0,0,0,.6);}
+
+/* ════════════════════════════════
+   STATS
+════════════════════════════════ */
+#statsScreen{background:var(--bg1);}
+.stats-body{flex:1;overflow-y:auto;padding:14px;}
+.stats-hero{
+  background:linear-gradient(145deg,var(--g08),var(--g05));
+  border:1px solid var(--gb);border-radius:20px;
+  padding:20px;display:flex;flex-direction:column;align-items:center;
+  margin-bottom:14px;
+  box-shadow:inset 0 1px 0 var(--g08);
+}
+.stats-hero-icon{
+  width:58px;height:58px;border-radius:18px;
+  background:linear-gradient(135deg,rgba(79,142,247,.2),rgba(45,92,232,.1));
+  border:1px solid rgba(79,142,247,.25);
+  display:flex;align-items:center;justify-content:center;margin-bottom:12px;
+}
+.stats-title{font-size:22px;font-weight:900;color:var(--t1);letter-spacing:-.5px;margin-bottom:3px;}
+.stats-sub{font-size:12px;color:var(--t3);font-weight:500;}
+.team-toggle{
+  display:flex;background:rgba(0,0,0,.3);border:1px solid var(--gb);
+  border-radius:999px;padding:3px;margin:14px 0 0;
+}
+.team-btn{
+  flex:1;padding:8px 16px;border:none;border-radius:999px;
+  font-family:'Tajawal',sans-serif;font-size:13px;font-weight:800;
+  cursor:pointer;color:var(--t3);background:transparent;
+  transition:all .22s var(--ease);
+}
+.team-btn.active{
+  background:linear-gradient(135deg,rgba(79,142,247,.3),rgba(45,92,232,.2));
+  border:1px solid rgba(79,142,247,.4);color:white;
+  box-shadow:0 2px 12px rgba(79,142,247,.25);
+}
+.stat-cards{display:flex;flex-direction:column;gap:10px;margin-bottom:14px;}
+.stat-card{
+  background:linear-gradient(145deg,var(--g08),var(--g05));
+  border:1px solid var(--gb);border-radius:16px;padding:14px 16px;
+  box-shadow:inset 0 1px 0 var(--g08);
+}
+.stat-card-top{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.stat-dot{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.stat-dot.g{background:rgba(46,204,113,.18);border:1px solid rgba(46,204,113,.3);}
+.stat-dot.r{background:rgba(231,76,60,.18);border:1px solid rgba(231,76,60,.28);}
+.stat-dot.b{background:rgba(79,142,247,.18);border:1px solid rgba(79,142,247,.26);}
+.stat-num{font-size:24px;font-weight:900;color:var(--t1);}
+.stat-lbl{font-size:10px;color:var(--t3);font-weight:700;letter-spacing:.5px;text-transform:uppercase;}
+.stat-bar-bg{width:100%;height:4px;background:var(--g08);border-radius:2px;overflow:hidden;}
+.stat-bar{height:100%;border-radius:2px;transition:width .8s var(--ease);}
+.bar-g{background:linear-gradient(90deg,#2ECC71,#27AE60);}
+.bar-r{background:linear-gradient(90deg,#E74C3C,#C0392B);}
+.bar-b{background:var(--g18);}
+.level-card{
+  background:linear-gradient(145deg,var(--g08),var(--g05));
+  border:1px solid var(--gb);border-radius:16px;
+  padding:16px;display:flex;align-items:center;gap:16px;
+  margin-bottom:12px;box-shadow:inset 0 1px 0 var(--g08);
+}
+.level-ring{position:relative;width:68px;height:68px;flex-shrink:0;}
+.level-ring svg{position:absolute;inset:0;width:100%;height:100%;}
+.level-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:var(--t1);}
+.level-title-lbl{font-size:10px;color:var(--t3);font-weight:700;letter-spacing:1px;text-transform:uppercase;}
+.level-rank{font-size:21px;font-weight:900;color:var(--t1);letter-spacing:-.5px;}
+.level-pcts{display:flex;gap:4px;align-items:center;font-size:12px;}
+.pct-g{color:var(--green);font-weight:800;}
+.pct-r{color:var(--red);font-weight:800;}
+.pct-sep{color:var(--t3);}
+.stats-reset-btn{
+  width:100%;background:rgba(231,76,60,.08);border:1px solid rgba(231,76,60,.18);
+  border-radius:12px;padding:11px;
+  font-family:'Tajawal',sans-serif;font-size:12px;font-weight:700;
+  color:rgba(231,76,60,.6);cursor:pointer;
+}
+
+/* ════════════════════════════════
+   CONTACT
+════════════════════════════════ */
+#contactScreen{background:var(--bg1);}
+.contact-body{flex:1;overflow-y:auto;padding:14px;}
+.contact-hero{
+  background:linear-gradient(145deg,var(--g08),var(--g05));
+  border:1px solid var(--gb);border-radius:20px;
+  padding:20px;display:flex;flex-direction:column;align-items:center;
+  margin-bottom:14px;box-shadow:inset 0 1px 0 var(--g08);
+}
+.contact-hero-icon{
+  width:58px;height:58px;border-radius:18px;
+  background:linear-gradient(135deg,rgba(46,204,113,.18),rgba(30,130,50,.1));
+  border:1px solid rgba(46,204,113,.22);
+  display:flex;align-items:center;justify-content:center;margin-bottom:12px;
+}
+.contact-links{display:flex;flex-direction:column;gap:8px;margin-bottom:20px;}
+.contact-link{
+  display:flex;align-items:center;gap:12px;
+  background:linear-gradient(145deg,var(--g08),var(--g05));
+  border:1px solid var(--gb);border-radius:16px;
+  padding:14px 16px;text-decoration:none;
+  transition:background .15s;box-shadow:inset 0 1px 0 var(--g08);
+}
+.contact-link:active{background:var(--g12);}
+.contact-link-icon{width:42px;height:42px;border-radius:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.contact-link-text{flex:1;}
+.contact-link-name{font-size:14px;font-weight:800;color:var(--t1);}
+.contact-link-handle{font-size:11px;color:var(--t3);font-weight:500;}
+.contact-link-arrow{color:var(--t3);}
+.contact-version{font-size:11px;color:var(--t3);text-align:center;letter-spacing:.3px;}
+</style>
+</head>
+<body>
+
+<!-- ════ SPLASH ════ -->
+<div id="splash" class="screen active">
+  <div class="splash-icon-wrap">
+    <svg width="70" height="70" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="siBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#141928"/><stop offset="100%" stop-color="#060810"/></linearGradient>
+        <linearGradient id="siGold" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#FFE566"/><stop offset="100%" stop-color="#C8960C"/></linearGradient>
+      </defs>
+      <rect width="200" height="200" rx="44" fill="url(#siBg)"/>
+      <rect x="4" y="4" width="192" height="192" rx="41" fill="none" stroke="rgba(255,215,0,.25)" stroke-width="1.5"/>
+      <g transform="rotate(-26 100 180)"><rect x="30" y="60" width="55" height="78" rx="8" fill="white" opacity=".82"/><text x="57" y="115" font-size="36" text-anchor="middle" font-family="serif" fill="#111">♣</text></g>
+      <g transform="rotate(-9 100 180)"><rect x="45" y="52" width="55" height="78" rx="8" fill="white" opacity=".92"/><text x="72" y="107" font-size="36" text-anchor="middle" font-family="serif" fill="#cc0000">♦</text></g>
+      <g transform="rotate(9 100 180)"><rect x="60" y="52" width="55" height="78" rx="8" fill="white" opacity=".92"/><text x="87" y="107" font-size="36" text-anchor="middle" font-family="serif" fill="#cc0000">♥</text></g>
+      <g transform="rotate(26 100 180)"><rect x="75" y="60" width="55" height="78" rx="8" fill="white" opacity=".82"/><text x="102" y="115" font-size="36" text-anchor="middle" font-family="serif" fill="#111">♠</text></g>
+      <polygon points="100,156 106,166 100,176 94,166" fill="url(#siGold)" opacity=".9"/>
+    </svg>
+  </div>
+  <div class="splash-name">نشرة</div>
+  <div class="splash-tag">احسب · انشر · لحم جديد</div>
+  <div class="splash-dots">
+    <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+  </div>
+</div>
+
+<!-- ════ GAME ════ -->
+<div id="game" class="screen">
+  <div class="game-orb orb1"></div>
+  <div class="game-orb orb2"></div>
+
+  <div class="topbar">
+    <div class="topbar-actions" style="order:2">
+      <button class="icon-btn" onclick="showS('editNames')">
+        <svg width="17" height="17" viewBox="0 0 60 80" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="2" width="56" height="76" rx="6" fill="white" opacity=".95"/>
+          <polygon points="30,8 22,22 30,18 38,22" fill="#8B2BE2" opacity=".9"/>
+          <circle cx="22" cy="22" r="3" fill="#FFD700"/>
+          <circle cx="38" cy="22" r="3" fill="#E2342B"/>
+          <ellipse cx="30" cy="42" rx="12" ry="14" fill="#FFE0A0"/>
+          <ellipse cx="26" cy="40" rx="2" ry="2.5" fill="#111"/>
+          <ellipse cx="34" cy="40" rx="2" ry="2.5" fill="#111"/>
+          <path d="M24,50 Q30,55 36,50" fill="none" stroke="#c00" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M15,60 Q30,55 45,60 L45,78 L15,78 Z" fill="#E2342B" opacity=".3"/>
+        </svg>
+      </button>
+      <button class="icon-btn" onclick="showS('themePicker')">
+        <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10c1.1 0 2-.9 2-2 0-.51-.19-.98-.5-1.35-.3-.36-.5-.82-.5-1.32 0-1.1.9-2 2-2h2.35C20.37 15.33 22 13.29 22 11c0-4.96-4.48-9-10-9z"
+            fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="6.5" cy="11.5" r="1.3" fill="#E2342B"/>
+          <circle cx="9.5" cy="7.5" r="1.3" fill="#FFD700"/>
+          <circle cx="14.5" cy="7.5" r="1.3" fill="#2ECC71"/>
+          <circle cx="17.5" cy="11.5" r="1.3" fill="#4A7BF7"/>
+        </svg>
+      </button>
+
+    </div>
+    <div class="topbar-title">نشرة</div>
+    <div style="width:122px;order:1"></div>
+  </div>
+
+  <div class="score-zone">
+    <div class="score-panel">
+      <div class="score-panel-name" id="dispName1">لنا</div>
+      <div class="score-circle">
+        <div class="score-circle-bg"></div>
+        <div class="score-number" id="total1">0</div>
+      </div>
+    </div>
+    <div style="width:1px;background:linear-gradient(to bottom,transparent,var(--gb),transparent);margin:20px 0;flex-shrink:0;"></div>
+    <div class="score-panel">
+      <div class="score-panel-name" id="dispName2">لهم</div>
+      <div class="score-circle">
+        <div class="score-circle-bg"></div>
+        <div class="score-number" id="total2">0</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mid-section">
+    <div class="dealer-row">
+      <div class="dealer-label">توزيع الورق</div>
+      <div class="dealer-name" id="dealerName">لنا</div>
+    </div>
+
+    <button class="arrow-btn" onclick="manualRotate()">
+      <span class="arrow-glyph" id="dealerArrow">↑</span>
+    </button>
+
+    <div class="timer-wrap">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--t3)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <span class="timer-text" id="timerDisplay">00:00</span>
+    </div>
+
+    <div class="cta-wrap">
+      <button class="cta-btn" onclick="openSheet()">
+        <div class="cta-inner">
+          <svg class="cta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          سجّل الجولة
+        </div>
+      </button>
+    </div>
+
+    <div class="history-scroll">
+      <div class="history-header">
+        <div class="history-col" id="histLabel1">لنا</div>
+        <div style="width:28px"></div>
+        <div class="history-col" id="histLabel2">لهم</div>
+      </div>
+      <div class="history-list" id="histList"></div>
+    </div>
+  </div>
+
+  <div class="bottom-actions">
+    <button class="action-btn btn-undo" onclick="undoRound()">تراجع</button>
+    <button class="action-btn btn-new" onclick="confirmNew()">نشرة جديدة</button>
+  </div>
+
+  <div class="bottom-nav">
+    <button class="nav-tab active" onclick="navTab('game')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M9 7h6M9 11h6M9 15h4"/></svg>
+      <span class="nav-label">العب</span>
+    </button>
+    <button class="nav-tab" onclick="navTab('statsScreen')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      <span class="nav-label">إحصائيات</span>
+    </button>
+    <button class="nav-tab" onclick="navTab('contactScreen')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span class="nav-label">تواصل</span>
+    </button>
+  </div>
+</div>
+
+<!-- ════ EDIT NAMES ════ -->
+<div id="editNames" class="screen">
+  <div class="topbar">
+    <div class="topbar-title">دق الولد</div>
+    <div class="topbar-actions">
+      <button class="icon-btn" onclick="navTab('game')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="edit-scroll">
+    <div class="edit-group">
+      <div class="edit-group-label">أسماء الفريقين</div>
+      <input class="edit-field" id="editTeam1" placeholder="الفريق الأول" value="لنا">
+      <input class="edit-field" id="editTeam2" placeholder="الفريق الثاني" value="لهم">
+    </div>
+    <div class="edit-group">
+      <div class="edit-group-label">أسماء اللاعبين</div>
+      <input class="edit-field" id="p1" placeholder="اللاعب الأول">
+      <input class="edit-field" id="p2" placeholder="اللاعب الثاني">
+      <input class="edit-field" id="p3" placeholder="اللاعب الثالث">
+      <input class="edit-field" id="p4" placeholder="اللاعب الرابع">
+    </div>
+  </div>
+  <div class="edit-footer">
+    <button class="edit-btn edit-skip" onclick="navTab('game')">تخطي</button>
+    <button class="edit-btn edit-done" onclick="applyEdit()">تم ✓</button>
+  </div>
+</div>
+
+<!-- ════ THEME PICKER ════ -->
+<div id="themePicker" class="screen">
+  <div class="topbar">
+    <div class="topbar-title">الثيمات</div>
+    <div class="topbar-actions">
+      <button class="icon-btn" onclick="navTab('game')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="theme-body">
+    <div class="theme-grid">
+      <!-- featured first -->
+
+    <!-- ١ — ورق مبعثر -->
+    <div class="theme-item" id="th1" onclick="applyTheme(1)">
+      <div class="theme-preview">
+        <svg viewBox="0 0 300 180" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+          <rect width="300" height="180" fill="#08090f"/>
+          <g transform="rotate(-18 55 38)" opacity=".18"><rect x="15" y="8" width="38" height="54" rx="5" fill="white"/><text x="34" y="43" font-size="20" text-anchor="middle" font-family="serif" fill="#cc0000">♥</text></g>
+          <g transform="rotate(14 255 28)" opacity=".18"><rect x="232" y="4" width="38" height="54" rx="5" fill="white"/><text x="251" y="39" font-size="20" text-anchor="middle" font-family="serif" fill="#111">♠</text></g>
+          <g transform="rotate(-10 35 148)" opacity=".15"><rect x="10" y="122" width="38" height="54" rx="5" fill="white"/><text x="29" y="157" font-size="20" text-anchor="middle" font-family="serif" fill="#cc0000">♦</text></g>
+          <g transform="rotate(20 265 148)" opacity=".15"><rect x="242" y="126" width="38" height="54" rx="5" fill="white"/><text x="261" y="161" font-size="20" text-anchor="middle" font-family="serif" fill="#111">♣</text></g>
+          <g transform="rotate(5 150 15)" opacity=".12"><rect x="128" y="0" width="38" height="54" rx="5" fill="white"/><text x="147" y="35" font-size="20" text-anchor="middle" font-family="serif" fill="#cc0000">♦</text></g>
+          <text x="90" y="100" font-size="38" fill="rgba(255,255,255,.04)" font-family="serif">♥</text>
+          <text x="190" y="95" font-size="38" fill="rgba(255,255,255,.04)" font-family="serif">♠</text>
+        </svg>
+        <div class="theme-scores">
+          <div class="ts"><div class="ts-n">لنا</div><div class="ts-v">83</div></div>
+          <div class="ts"><div class="ts-n">لهم</div><div class="ts-v">138</div></div>
+        </div>
+      </div>
+      <div class="theme-info">
+        <div class="theme-name">ورق مبعثر</div>
+        <div class="theme-check-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+      </div>
+    </div>
+
+    <!-- ٣ — رموز البلوت -->
+    <div class="theme-item" id="th3" onclick="applyTheme(3)">
+      <div class="theme-preview">
+        <svg viewBox="0 0 300 180" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+          <rect width="300" height="180" fill="#08090f"/>
+          <text x="10" y="140" font-size="130" fill="rgba(99,179,255,.04)" font-family="serif">♠</text>
+          <text x="120" y="168" font-size="110" fill="rgba(200,50,50,.045)" font-family="serif">♥</text>
+          <text x="195" y="125" font-size="100" fill="rgba(99,179,255,.035)" font-family="serif">♣</text>
+          <text x="238" y="172" font-size="90" fill="rgba(200,50,50,.04)" font-family="serif">♦</text>
+          <rect x="6" y="6" width="288" height="168" rx="12" fill="none" stroke="rgba(99,179,255,.07)" stroke-width="1"/>
+        </svg>
+        <div class="theme-scores">
+          <div class="ts"><div class="ts-n">لنا</div><div class="ts-v">83</div></div>
+          <div class="ts"><div class="ts-n">لهم</div><div class="ts-v">138</div></div>
+        </div>
+      </div>
+      <div class="theme-info">
+        <div class="theme-name">رموز البلوت</div>
+        <div class="theme-check-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+      </div>
+    </div>
+
+    <!-- ٤ — ظهر الورقة -->
+    <div class="theme-item" id="th4" onclick="applyTheme(4)">
+      <div class="theme-preview">
+        <svg viewBox="0 0 300 180" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+          <rect width="300" height="180" fill="#08090f"/>
+          <defs>
+            <pattern id="cb" x="0" y="0" width="18" height="18" patternUnits="userSpaceOnUse">
+              <rect width="18" height="18" fill="transparent"/>
+              <polygon points="9,2 16,9 9,16 2,9" fill="none" stroke="rgba(99,179,255,.11)" stroke-width=".8"/>
+              <circle cx="9" cy="9" r="1.3" fill="rgba(99,179,255,.13)"/>
+            </pattern>
+          </defs>
+          <rect width="300" height="180" fill="url(#cb)"/>
+          <rect x="8" y="8" width="284" height="164" rx="10" fill="none" stroke="rgba(99,179,255,.18)" stroke-width="1"/>
+          <rect x="15" y="15" width="270" height="150" rx="8" fill="none" stroke="rgba(99,179,255,.09)" stroke-width="1"/>
+          <text x="22" y="36" font-size="14" fill="rgba(99,179,255,.3)" font-family="serif">♠</text>
+          <text x="270" y="36" font-size="14" fill="rgba(99,179,255,.3)" font-family="serif" text-anchor="end">♠</text>
+          <text x="22" y="170" font-size="14" fill="rgba(99,179,255,.3)" font-family="serif">♠</text>
+          <text x="270" y="170" font-size="14" fill="rgba(99,179,255,.3)" font-family="serif" text-anchor="end">♠</text>
+        </svg>
+        <div class="theme-scores">
+          <div class="ts"><div class="ts-n">لنا</div><div class="ts-v">83</div></div>
+          <div class="ts"><div class="ts-n">لهم</div><div class="ts-v">138</div></div>
+        </div>
+      </div>
+      <div class="theme-info">
+        <div class="theme-name">ظهر الورقة</div>
+        <div class="theme-check-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+      </div>
+    </div>
+
+    <!-- ٥ — المجلس السعودي (default) -->
+    <div class="theme-item theme-featured sel" id="th5" onclick="applyTheme(5)">
+      <div class="theme-preview">
+        <svg viewBox="0 0 300 180" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="majlis" cx="50%" cy="70%" r="55%">
+              <stop offset="0%" stop-color="rgba(200,150,40,.12)"/>
+              <stop offset="100%" stop-color="transparent"/>
+            </radialGradient>
+          </defs>
+          <rect width="300" height="180" fill="#08090f"/>
+          <rect width="300" height="180" fill="url(#majlis)"/>
+          <!-- دلة قهوة -->
+          <g opacity=".18" fill="rgba(255,200,80,1)">
+            <path d="M44,148 Q40,115 43,96 Q45,82 53,78 Q61,74 63,79 Q65,74 70,77 Q74,70 79,79 Q81,74 85,77 L83,148 Z"/>
+            <ellipse cx="63" cy="148" rx="20" ry="5"/>
+            <path d="M43,102 Q28,97 26,111 Q28,121 41,116" fill="none" stroke="rgba(255,200,80,1)" stroke-width="2.5"/>
+          </g>
+          <!-- فناجين -->
+          <g opacity=".14" fill="rgba(255,200,80,1)">
+            <ellipse cx="105" cy="152" rx="9" ry="3"/><rect x="96" y="144" width="18" height="8" rx="2"/>
+            <ellipse cx="135" cy="152" rx="9" ry="3"/><rect x="126" y="144" width="18" height="8" rx="2"/>
+          </g>
+          <!-- ورق كوتشينة -->
+          <g opacity=".18">
+            <g transform="rotate(-18 248 36)"><rect x="228" y="12" width="26" height="38" rx="4" fill="white"/><text x="241" y="38" font-size="16" text-anchor="middle" font-family="serif" fill="#cc0000">♥</text></g>
+            <g transform="rotate(-5 248 36)"><rect x="236" y="9" width="26" height="38" rx="4" fill="white"/><text x="249" y="35" font-size="16" text-anchor="middle" font-family="serif" fill="#111">♠</text></g>
+            <g transform="rotate(8 248 36)"><rect x="244" y="12" width="26" height="38" rx="4" fill="white"/><text x="257" y="38" font-size="16" text-anchor="middle" font-family="serif" fill="#cc0000">♦</text></g>
+            <g transform="rotate(21 248 36)"><rect x="252" y="16" width="26" height="38" rx="4" fill="white"/><text x="265" y="42" font-size="16" text-anchor="middle" font-family="serif" fill="#111">♣</text></g>
+          </g>
+          <!-- نجوم الليل -->
+          <circle cx="22" cy="22" r="1.2" fill="rgba(255,255,255,.4)"/>
+          <circle cx="55" cy="14" r="1" fill="rgba(255,255,255,.32)"/>
+          <circle cx="120" cy="18" r="1.1" fill="rgba(255,255,255,.3)"/>
+          <circle cx="170" cy="10" r=".8" fill="rgba(255,255,255,.25)"/>
+          <circle cx="195" cy="24" r="1" fill="rgba(255,255,255,.28)"/>
+          <!-- أرضية -->
+          <line x1="0" y1="155" x2="300" y2="155" stroke="rgba(255,200,80,.07)" stroke-width="1"/>
+          <!-- badge افتراضي -->
+          <rect x="106" y="6" width="88" height="18" rx="9" fill="rgba(255,200,80,.18)" stroke="rgba(255,200,80,.35)" stroke-width="1"/>
+          <text x="150" y="18" font-size="9" font-weight="800" text-anchor="middle" fill="rgba(255,200,80,.9)" font-family="Tajawal,sans-serif">الافتراضي</text>
+        </svg>
+        <div class="theme-scores" style="--ts-color:rgba(255,200,80,.5);">
+          <div class="ts"><div class="ts-n">لنا</div><div class="ts-v">83</div></div>
+          <div class="ts"><div class="ts-n">لهم</div><div class="ts-v">138</div></div>
+        </div>
+      </div>
+      <div class="theme-info">
+        <div class="theme-name">المجلس السعودي ⭐</div>
+        <div class="theme-check-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+      </div>
+    </div>
+
+    </div><!-- end theme-grid -->
+  </div>
+</div>
+
+<!-- ════ STATS ════ -->
+<div id="statsScreen" class="screen">
+  <div class="topbar">
+    <div class="topbar-title">إحصائيات</div>
+    <div style="width:38px"></div>
+  </div>
+  <div class="stats-body">
+    <div class="stats-hero">
+      <div class="stats-hero-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="rgba(99,179,255,.85)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="6"/><path d="M8 14l-2 8 6-3 6 3-2-8"/></svg></div>
+      <div class="stats-title">نتائج النشرات</div>
+      <div class="stats-sub">سجل كامل لكل فريق</div>
+      <div class="team-toggle"><button class="team-btn active" id="togT1" onclick="switchTeam(0)">لنا</button><button class="team-btn" id="togT2" onclick="switchTeam(1)">لهم</button></div>
+    </div>
+    <div class="stat-cards">
+      <div class="stat-card"><div class="stat-card-top"><div class="stat-dot g"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2ECC71" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div><div><div class="stat-num" id="statWins">0</div><div class="stat-lbl">انتصارات</div></div></div><div class="stat-bar-bg"><div class="stat-bar bar-g" id="barWins" style="width:0%"></div></div></div>
+      <div class="stat-card"><div class="stat-card-top"><div class="stat-dot r"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#E74C3C" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div><div><div class="stat-num" id="statLoss">0</div><div class="stat-lbl">هزائم</div></div></div><div class="stat-bar-bg"><div class="stat-bar bar-r" id="barLoss" style="width:0%"></div></div></div>
+      <div class="stat-card"><div class="stat-card-top"><div class="stat-dot b"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(99,179,255,.85)" stroke-width="2.5" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="3"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg></div><div><div class="stat-num" id="statGames">0</div><div class="stat-lbl">إجمالي النشرات</div></div></div><div class="stat-bar-bg"><div class="stat-bar bar-b" id="barGames" style="width:100%"></div></div></div>
+    </div>
+    <div class="level-card">
+      <div class="level-ring">
+        <svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="30" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="6"/><circle cx="40" cy="40" r="30" fill="none" stroke="url(#lvlG)" stroke-width="6" stroke-dasharray="188.5" id="levelArc" stroke-dashoffset="188.5" stroke-linecap="round" transform="rotate(-90 40 40)"/><defs><linearGradient id="lvlG" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#4F8EF7"/><stop offset="100%" stop-color="#2ECC71"/></linearGradient></defs></svg>
+        <div class="level-num" id="levelNum">0</div>
+      </div>
+      <div><div class="level-title-lbl">المستوى</div><div class="level-rank" id="levelRank">مبتدئ</div><div class="level-pcts"><span class="pct-g" id="winPct">0%</span><span class="pct-sep"> فوز · </span><span class="pct-r" id="lossPct">0%</span><span class="pct-sep"> خسارة</span></div></div>
+    </div>
+    <button class="stats-reset-btn" onclick="confirmResetStats()">مسح الإحصائيات</button>
+  </div>
+  <div class="bottom-nav">
+    <button class="nav-tab" onclick="navTab('game')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M9 7h6M9 11h6M9 15h4"/></svg><span class="nav-label">العب</span></button>
+    <button class="nav-tab active" onclick="navTab('statsScreen')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span class="nav-label">إحصائيات</span></button>
+    <button class="nav-tab" onclick="navTab('contactScreen')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span class="nav-label">تواصل</span></button>
+  </div>
+</div>
+
+<!-- ════ CONTACT ════ -->
+<div id="contactScreen" class="screen">
+  <div class="topbar">
+    <div class="topbar-title">تواصل معنا</div>
+    <div style="width:38px"></div>
+  </div>
+  <div class="contact-body">
+    <div class="contact-hero">
+      <div class="contact-hero-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="rgba(46,204,113,.9)" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+      <div class="stats-title">تواصل معنا</div>
+      <div class="stats-sub">نحب نسمع رأيك</div>
+    </div>
+    <div class="contact-links">
+      <a class="contact-link" href="https://x.com/nashrah_app?s=21" target="_blank">
+        <div class="contact-link-icon" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1)"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="color:white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.259 5.629zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></div>
+        <div class="contact-link-text"><div class="contact-link-name">تويتر / X</div><div class="contact-link-handle">@nashrah_app</div></div>
+        <svg class="contact-link-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </a>
+      <a class="contact-link" href="https://www.instagram.com/nashrah_app?igsh=M3JtanhuMzI0N2w1&utm_source=qr" target="_blank">
+        <div class="contact-link-icon" style="background:rgba(131,58,180,.15);border:1px solid rgba(131,58,180,.25)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(200,100,255,.85)" stroke-width="2" stroke-linecap="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></div>
+        <div class="contact-link-text"><div class="contact-link-name">إنستقرام</div><div class="contact-link-handle">@nashrah_app</div></div>
+        <svg class="contact-link-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </a>
+      <a class="contact-link" href="https://wa.me/966546666005" target="_blank">
+        <div class="contact-link-icon" style="background:rgba(37,211,102,.12);border:1px solid rgba(37,211,102,.22)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(37,211,102,.85)" stroke-width="2" stroke-linecap="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></div>
+        <div class="contact-link-text"><div class="contact-link-name">واتساب</div><div class="contact-link-handle">راسلنا مباشرة</div></div>
+        <svg class="contact-link-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </a>
+    </div>
+    <div class="contact-version">نشرة · الإصدار 1.0.0 · صُنع في السعودية</div>
+  </div>
+  <div class="bottom-nav">
+    <button class="nav-tab" onclick="navTab('game')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M9 7h6M9 11h6M9 15h4"/></svg><span class="nav-label">العب</span></button>
+    <button class="nav-tab" onclick="navTab('statsScreen')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span class="nav-label">إحصائيات</span></button>
+    <button class="nav-tab active" onclick="navTab('contactScreen')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span class="nav-label">تواصل</span></button>
+  </div>
+</div>
+
+<!-- ════ SCORE SHEET ════ -->
+<div class="overlay" id="sheetOv" onclick="closeSheetOut(event)">
+  <div class="bottom-sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">تسجيل الجولة</div>
+    <div class="score-inputs">
+      <div class="score-input-group">
+        <div class="score-input-label" id="sheetLbl1">لنا</div>
+        <input class="score-input" id="sIn1" type="tel" inputmode="numeric" pattern="[0-9]*" placeholder="0" oninput="onInput()">
+      </div>
+      <div class="score-dash">—</div>
+      <div class="score-input-group">
+        <div class="score-input-label" id="sheetLbl2">لهم</div>
+        <input class="score-input" id="sIn2" type="tel" inputmode="numeric" pattern="[0-9]*" placeholder="0" oninput="onInput()">
+      </div>
+    </div>
+    <div class="sheet-hint" id="sheetHint">أدخل نقاط الفريقين</div>
+    <button class="sheet-submit" onclick="registerRound()">سجّل الجولة</button>
+  </div>
+</div>
+
+<!-- ════ WIN SHEET ════ -->
+<div class="win-overlay" id="winOv">
+  <div class="win-sheet">
+    <div class="sheet-handle"></div>
+    <div class="win-trophy">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(245,200,66,.9)" stroke-width="2" stroke-linecap="round">
+        <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
+        <path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/>
+        <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/>
+        <path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/>
+      </svg>
+    </div>
+    <div class="win-label">انتهت النشرة</div>
+    <div class="win-name" id="winName"></div>
+    <div class="win-score" id="winScore"></div>
+    <div class="win-btns">
+      <button class="win-btn win-btn-undo" onclick="undoFromWin()">تراجع</button>
+      <button class="win-btn win-btn-new" onclick="newFromWin()">نشرة جديدة</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════ CONFIRM ════ -->
+<div class="modal-overlay" id="confirmOv">
+  <div class="modal-card">
+    <div class="modal-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(231,76,60,.8)" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.49-3.39"/></svg></div>
+    <div class="modal-title">نشرة جديدة؟</div>
+    <div class="modal-sub">سيتم مسح جميع النقاط الحالية وبدء لعبة جديدة</div>
+    <div class="modal-btns">
+      <button class="modal-btn modal-cancel" onclick="closeConfirm()">إلغاء</button>
+      <button class="modal-btn modal-ok" onclick="doNew()">تأكيد</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════ STATS RESET CONFIRM ════ -->
+<div class="modal-overlay" id="statsResetOv">
+  <div class="modal-card">
+    <div class="modal-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(231,76,60,.8)" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></div>
+    <div class="modal-title">مسح الإحصائيات؟</div>
+    <div class="modal-sub">سيتم حذف جميع سجلات الفوز والخسارة</div>
+    <div class="modal-btns">
+      <button class="modal-btn modal-cancel" onclick="document.getElementById('statsResetOv').classList.remove('show')">إلغاء</button>
+      <button class="modal-btn modal-ok" onclick="doResetStats()">تأكيد</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══ STATE ═══ */
+let scores=[0,0],history=[],gameOver=false,dealerIdx=0,arrowIdx=0,timerSec=0,timerInt=null,statsTeam=0,isDark=true;
+const WIN=152,ARROWS=['↑','←','↓','→'];
+const ART_THEMES={art1:{a:'#060810',b:'#0c0f1e',light:false},art2:{a:'#1a0800',b:'#0e0500',light:false}};
+
+/* ═══ SPLASH ═══ */
+window.addEventListener('DOMContentLoaded',()=>{
+  try{if(localStorage.getItem('nashrah_dark')==='0'){isDark=false;document.body.classList.add('light');updateDmIcon();}}catch(e){}
+  setTimeout(()=>{
+    const s=document.getElementById('splash');
+    s.style.transition='opacity .55s ease,transform .55s ease';
+    s.style.opacity='0';s.style.transform='scale(1.06)';
+    setTimeout(()=>{s.classList.remove('active');navTab('game');},540);
+  },2000);
+});
+
+/* ═══ NAV ═══ */
+function showS(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+function navTab(id){
+  showS(id);
+  if(id==='statsScreen'){statsTeam=0;renderStats();}
+  document.querySelectorAll('.nav-tab').forEach(t=>{const f=t.getAttribute('onclick')||'';t.classList.toggle('active',f.includes("'"+id+"'"));});
+}
+
+/* ═══ NAMES ═══ */
+function getName(i){return document.getElementById(i===0?'dispName1':'dispName2').textContent;}
+function applyNames(t1,t2){
+  ['dispName1','histLabel1','sheetLbl1','togT1'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=t1;});
+  ['dispName2','histLabel2','sheetLbl2','togT2'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=t2;});
+  updateDealer();
+}
+function applyEdit(){applyNames(document.getElementById('editTeam1').value.trim()||'لنا',document.getElementById('editTeam2').value.trim()||'لهم');navTab('game');}
+
+/* ═══ DARK MODE ═══ */
+function toggleDark(){isDark=!isDark;document.body.classList.toggle('light',!isDark);try{localStorage.setItem('nashrah_dark',isDark?'1':'0');}catch(e){}updateDmIcon();}
+function updateDmIcon(){const i=document.getElementById('dmIcon');if(!i)return;i.innerHTML=isDark?'<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>':'<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';}
+
+/* ═══ THEME ═══ */
+function setTheme(card,c1,c2,fl){
+  document.querySelectorAll('.color-swatch,.art-card').forEach(c=>c.classList.remove('sel'));
+  card.classList.add('sel');
+  document.documentElement.style.setProperty('--bg1',c1);document.documentElement.style.setProperty('--bg2',c2);
+  document.body.style.background=c1;
+  if(fl===true){isDark=false;document.body.classList.add('light');}
+  else if(fl===false){isDark=true;document.body.classList.remove('light');}
+  try{localStorage.setItem('nashrah_dark',isDark?'1':'0');}catch(e){}
+  updateDmIcon();setTimeout(()=>navTab('game'),180);
+}
+function setArtTheme(id){
+  document.querySelectorAll('.color-swatch,.art-card').forEach(c=>c.classList.remove('sel'));
+  document.getElementById(id==='art1'?'artCard1':'artCard2').classList.add('sel');
+  const t=ART_THEMES[id];
+  document.documentElement.style.setProperty('--bg1',t.a);document.documentElement.style.setProperty('--bg2',t.b);
+  document.body.style.background=t.a;
+  isDark=!t.light;document.body.classList.toggle('light',t.light);
+  try{localStorage.setItem('nashrah_dark',isDark?'1':'0');}catch(e){}
+  updateDmIcon();setTimeout(()=>navTab('game'),200);
+}
+
+/* ═══ TIMER ═══ */
+function startTimer(){clearInterval(timerInt);timerSec=0;tick();timerInt=setInterval(tick,1000);}
+function stopTimer(){clearInterval(timerInt);}
+function tick(){const m=String(Math.floor(timerSec/60)).padStart(2,'0'),s=String(timerSec%60).padStart(2,'0');document.getElementById('timerDisplay').textContent=m+':'+s;timerSec++;}
+
+/* ═══ DEALER ═══ */
+function updateDealer(){document.getElementById('dealerName').textContent=getName(dealerIdx);}
+function updateArrow(){const e=document.getElementById('dealerArrow');e.textContent=ARROWS[arrowIdx];e.style.transform='scale(1.7) rotate(15deg)';setTimeout(()=>{e.style.transform='';},350);}
+function rotateDealer(){dealerIdx=dealerIdx===0?1:0;arrowIdx=(arrowIdx+1)%4;updateDealer();updateArrow();}
+function manualRotate(){dealerIdx=dealerIdx===0?1:0;arrowIdx=(arrowIdx+1)%4;updateDealer();updateArrow();}
+
+/* ═══ SHEET ═══ */
+function openSheet(){if(gameOver)return;document.getElementById('sIn1').value='';document.getElementById('sIn2').value='';const h=document.getElementById('sheetHint');h.textContent='أدخل نقاط الفريقين';h.className='sheet-hint';document.getElementById('sheetOv').classList.add('show');setTimeout(()=>document.getElementById('sIn1').focus(),100);}
+function closeSheet(){document.getElementById('sheetOv').classList.remove('show');}
+function closeSheetOut(e){if(e.target===document.getElementById('sheetOv'))closeSheet();}
+function onInput(){const s1=parseInt(document.getElementById('sIn1').value)||0,s2=parseInt(document.getElementById('sIn2').value)||0;const h=document.getElementById('sheetHint');h.textContent=(s1||s2)?getName(0)+': +'+s1+' · '+getName(1)+': +'+s2:'أدخل نقاط الفريقين';h.className='sheet-hint';}
+
+/* ═══ REGISTER ═══ */
+function registerRound(){
+  const v1=document.getElementById('sIn1').value.trim(),v2=document.getElementById('sIn2').value.trim();
+  const h=document.getElementById('sheetHint');
+  if(!v1||!v2){h.textContent='يجب إدخال نقاط الفريقين';h.className='sheet-hint err';[document.getElementById('sIn1'),document.getElementById('sIn2')].forEach(el=>{if(!el.value.trim()){el.style.borderColor='rgba(231,76,60,.55)';setTimeout(()=>{el.style.borderColor='';},1200);}});return;}
+  const s1=parseInt(v1)||0,s2=parseInt(v2)||0;
+  history.unshift({add1:s1,add2:s2,snap:[...scores]});scores[0]+=s1;scores[1]+=s2;
+  closeSheet();rotateDealer();startTimer();updateDisplay();renderHistory();checkWin();
+}
+
+/* ═══ WIN ═══ */
+function checkWin(){if(scores[0]>=WIN||scores[1]>=WIN){const wi=scores[0]>=WIN?0:1;gameOver=true;stopTimer();recordWin(wi);document.getElementById('winName').textContent=getName(wi);document.getElementById('winScore').textContent='وصل '+scores[wi]+' نقطة 🎉';document.getElementById('winOv').classList.add('show');}}
+function undoFromWin(){document.getElementById('winOv').classList.remove('show');undoRound();}
+function newFromWin(){document.getElementById('winOv').classList.remove('show');resetGame();}
+
+/* ═══ UNDO ═══ */
+function undoRound(){if(!history.length)return;const last=history.shift();scores=[...last.snap];gameOver=false;dealerIdx=dealerIdx===0?1:0;arrowIdx=(arrowIdx+3)%4;updateDealer();updateArrow();updateDisplay();renderHistory();startTimer();}
+
+/* ═══ NEW ═══ */
+function confirmNew(){document.getElementById('confirmOv').classList.add('show');}
+function closeConfirm(){document.getElementById('confirmOv').classList.remove('show');}
+function doNew(){closeConfirm();resetGame();}
+function resetGame(){scores=[0,0];history=[];gameOver=false;dealerIdx=0;arrowIdx=0;stopTimer();timerSec=0;tick();startTimer();document.getElementById('winOv').classList.remove('show');document.getElementById('histList').innerHTML='';updateDisplay();updateDealer();updateArrow();}
+
+/* ═══ DISPLAY ═══ */
+function updateDisplay(){[1,2].forEach(n=>{const el=document.getElementById('total'+n),v=scores[n-1],old=parseInt(el.textContent)||0;el.textContent=v;el.className='score-number'+(v>=WIN-20?' danger':'');if(v!==old){el.classList.add('pop');el.addEventListener('animationend',()=>el.classList.remove('pop'),{once:true});}});}
+function renderHistory(){const c=document.getElementById('histList');c.innerHTML='';history.forEach((r,i)=>{const rn=history.length-i,d=document.createElement('div');d.className='history-row';const c1=r.add1>r.add2?'win':(r.add1===0?'z':''),c2=r.add2>r.add1?'win':(r.add2===0?'z':'');d.innerHTML='<div class="history-round">جولة '+rn+'</div><div class="history-val '+c1+'">'+r.add1+'</div><div class="history-sep"></div><div class="history-val '+c2+'">'+r.add2+'</div>';c.appendChild(d);});}
+
+/* ═══ STATS ═══ */
+function loadStats(){try{return JSON.parse(localStorage.getItem('nashrah_stats')||'null');}catch(e){return null;}}
+function saveStats(s){try{localStorage.setItem('nashrah_stats',JSON.stringify(s));}catch(e){}}
+function getStats(){return loadStats()||{team1:{wins:0,losses:0,games:0},team2:{wins:0,losses:0,games:0}};}
+function recordWin(wi){const s=getStats(),wk=wi===0?'team1':'team2',lk=wi===0?'team2':'team1';s[wk].wins++;s[wk].games++;s[lk].losses++;s[lk].games++;saveStats(s);}
+function switchTeam(idx){statsTeam=idx;document.getElementById('togT1').className='team-btn'+(idx===0?' active':'');document.getElementById('togT2').className='team-btn'+(idx===1?' active':'');renderStats();}
+function renderStats(){
+  const s=getStats(),key=statsTeam===0?'team1':'team2',d=s[key];
+  const wins=d.wins||0,losses=d.losses||0,games=d.games||0,tot=Math.max(games,1);
+  document.getElementById('togT1').textContent=getName(0)||'لنا';
+  document.getElementById('togT2').textContent=getName(1)||'لهم';
+  document.getElementById('statWins').textContent=wins;
+  document.getElementById('statLoss').textContent=losses;
+  document.getElementById('statGames').textContent=games;
+  setTimeout(()=>{document.getElementById('barWins').style.width=(wins/tot*100)+'%';document.getElementById('barLoss').style.width=(losses/tot*100)+'%';document.getElementById('barGames').style.width='100%';},80);
+  const wP=games>0?Math.round(wins/games*100):0,lP=games>0?Math.round(losses/games*100):0;
+  document.getElementById('winPct').textContent=wP+'%';document.getElementById('lossPct').textContent=lP+'%';
+  const lvl=wins*5+games*2;
+  document.getElementById('levelNum').textContent=lvl;
+  document.getElementById('levelRank').textContent=lvl>=200?'أسطورة':lvl>=100?'محترف':lvl>=50?'متقدم':lvl>=20?'متوسط':'مبتدئ';
+  document.getElementById('levelArc').setAttribute('stroke-dashoffset',188.5-Math.min(lvl/300,1)*188.5);
+}
+function confirmResetStats(){document.getElementById('statsResetOv').classList.add('show');}
+function doResetStats(){saveStats({team1:{wins:0,losses:0,games:0},team2:{wins:0,losses:0,games:0}});renderStats();document.getElementById('statsResetOv').classList.remove('show');}
+
+/* ═══ THEMES ═══ */
+const THEME_BGS = {
+  1: { svg: `<g transform="rotate(-18 55 38)" opacity=".15"><rect x="15" y="8" width="38" height="54" rx="5" fill="white"/><text x="34" y="43" font-size="20" text-anchor="middle" font-family="serif" fill="#cc0000">&#9829;</text></g><g transform="rotate(14 255 28)" opacity=".15"><rect x="232" y="4" width="38" height="54" rx="5" fill="white"/><text x="251" y="39" font-size="20" text-anchor="middle" font-family="serif" fill="#111">&#9824;</text></g><g transform="rotate(-10 35 148)" opacity=".12"><rect x="10" y="122" width="38" height="54" rx="5" fill="white"/><text x="29" y="157" font-size="20" text-anchor="middle" font-family="serif" fill="#cc0000">&#9830;</text></g><g transform="rotate(20 265 148)" opacity=".12"><rect x="242" y="126" width="38" height="54" rx="5" fill="white"/><text x="261" y="161" font-size="20" text-anchor="middle" font-family="serif" fill="#111">&#9827;</text></g><text x="90" y="100" font-size="38" fill="rgba(255,255,255,.03)" font-family="serif">&#9829;</text><text x="190" y="95" font-size="38" fill="rgba(255,255,255,.03)" font-family="serif">&#9824;</text>` },
+  2: { svg: `<ellipse cx="50%" cy="50%" rx="45%" ry="37%" fill="rgba(20,80,40,.5)" stroke="rgba(100,200,120,.1)" stroke-width="1.5"/><ellipse cx="50%" cy="50%" rx="40%" ry="31%" fill="rgba(15,65,32,.4)" stroke="rgba(100,200,120,.06)" stroke-width="1"/><text x="35%" y="44%" font-size="14" fill="rgba(255,255,255,.07)" text-anchor="middle" font-family="serif">&#9824;</text><text x="65%" y="44%" font-size="14" fill="rgba(255,255,255,.07)" text-anchor="middle" font-family="serif">&#9829;</text><text x="35%" y="62%" font-size="14" fill="rgba(255,255,255,.07)" text-anchor="middle" font-family="serif">&#9830;</text><text x="65%" y="62%" font-size="14" fill="rgba(255,255,255,.07)" text-anchor="middle" font-family="serif">&#9827;</text><circle cx="50%" cy="50%" r="10" fill="none" stroke="rgba(100,200,120,.14)" stroke-width="1"/><circle cx="50%" cy="50%" r="3" fill="rgba(100,200,120,.18)"/>` },
+  3: { svg: `<text x="-10" y="75%" font-size="340" fill="rgba(99,179,255,.03)" font-family="serif">&#9824;</text><text x="30%" y="95%" font-size="300" fill="rgba(200,50,50,.04)" font-family="serif">&#9829;</text><text x="55%" y="70%" font-size="280" fill="rgba(99,179,255,.03)" font-family="serif">&#9827;</text>` },
+  4: { svg: `<defs><pattern id="gcb" x="0" y="0" width="18" height="18" patternUnits="userSpaceOnUse"><polygon points="9,2 16,9 9,16 2,9" fill="none" stroke="rgba(99,179,255,.1)" stroke-width=".8"/><circle cx="9" cy="9" r="1.2" fill="rgba(99,179,255,.12)"/></pattern></defs><rect width="100%" height="100%" fill="url(#gcb)"/><rect x="8" y="8" width="calc(100% - 16px)" height="calc(100% - 16px)" rx="10" fill="none" stroke="rgba(99,179,255,.18)" stroke-width="1"/>` },
+  5: { svg: `<defs><radialGradient id="gmj" cx="50%" cy="75%" r="55%"><stop offset="0%" stop-color="rgba(200,150,40,.12)"/><stop offset="100%" stop-color="transparent"/></radialGradient></defs><rect width="100%" height="100%" fill="url(#gmj)"/><g opacity=".2" fill="rgba(255,200,80,1)"><path d="M44,92% Q40,72% 43,60% Q45,52% 53,49% Q61,46% 63,50% Q65,46% 70,48% Q74,44% 79,50% L77,92% Z" transform="scale(1)"/></g><g opacity=".18"><g transform="rotate(-18 75% 18%)"><rect x="74%" y="6%" width="8%" height="22%" rx="4" fill="white"/><text x="78%" y="22%" font-size="14" text-anchor="middle" font-family="serif" fill="#cc0000">&#9829;</text></g><g transform="rotate(-5 75% 18%)"><rect x="76%" y="5%" width="8%" height="22%" rx="4" fill="white"/><text x="80%" y="21%" font-size="14" text-anchor="middle" font-family="serif" fill="#111">&#9824;</text></g><g transform="rotate(8 75% 18%)"><rect x="78%" y="6%" width="8%" height="22%" rx="4" fill="white"/><text x="82%" y="22%" font-size="14" text-anchor="middle" font-family="serif" fill="#cc0000">&#9830;</text></g></g><circle cx="7%" cy="11%" r="1.2" fill="rgba(255,255,255,.4)"/><circle cx="18%" cy="7%" r="1" fill="rgba(255,255,255,.32)"/><circle cx="40%" cy="10%" r="1.1" fill="rgba(255,255,255,.3)"/><circle cx="57%" cy="5%" r=".8" fill="rgba(255,255,255,.25)"/><line x1="0" y1="87%" x2="100%" y2="87%" stroke="rgba(255,200,80,.06)" stroke-width="1"/>` }
+};
+
+let currentTheme = 5;
+function applyTheme(n) {
+  currentTheme = n;
+  document.querySelectorAll('.theme-item').forEach(t => t.classList.remove('sel'));
+  const el = document.getElementById('th'+n);
+  if(el) el.classList.add('sel');
+  // apply background SVG to game screen orbs area
+  const orb1 = document.querySelector('.orb1');
+  const orb2 = document.querySelector('.orb2');
+  // create/update theme svg layer
+  let layer = document.getElementById('game-theme-layer');
+  if(!layer){
+    layer = document.createElementNS('http://www.w3.org/2000/svg','svg');
+    layer.id = 'game-theme-layer';
+    layer.setAttribute('viewBox','0 0 100 100');
+    layer.setAttribute('preserveAspectRatio','xMidYMid slice');
+    layer.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1;';
+    document.getElementById('game').insertBefore(layer, document.getElementById('game').firstChild);
+  }
+  layer.innerHTML = THEME_BGS[n].svg;
+  try{localStorage.setItem('nashrah_theme',n);}catch(e){}
+  setTimeout(()=>navTab('game'),180);
+}
+// load saved theme
+try{const st=parseInt(localStorage.getItem('nashrah_theme')||'5');applyTheme(st);}catch(e){applyTheme(5);}
+
+/* ═══ INIT ═══ */
+applyNames('لنا','لهم');
+</script>
+</body>
+</html>
